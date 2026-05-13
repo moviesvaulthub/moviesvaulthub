@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="msDAuNROhdIS1vFkk5V4iWl-mDU8iFUS_U2V6Gc1tgM" />
+<title>MoviesVault — Movies, Series & Dramas</title>
+<meta name="description" content="Download and stream free movies, TV series, Nollywood, Hollywood, K-Drama, Bollywood. Updated daily.">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+<meta name="robots" content="index, follow">
+<meta name="keywords" content="free movies online, Nollywood movies, Hollywood movies, Bollywood movies, K-Drama, TV series, watch movies free, download movies 2025, MoviesVault">
+<meta property="og:title" content="MoviesVault — Free Movies, Series &amp; Dramas">
+<meta property="og:description" content="Watch and download free movies, TV series, Nollywood, Hollywood, K-Drama, Bollywood. Updated daily.">
+<meta property="og:url" content="https://moviesvault.vercel.app/">
+<meta property="og:type" content="website">
+<script type="application/xml" id="sitemap-data"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c10;--surface:#13161d;--card:#1a1e28;--border:#252a36;--accent:#e63946;--text:#e8ecf0;--muted:#7a8394;--green:#2ec4b6;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* TOPBAR */
+.topbar{background:var(--accent);text-align:center;padding:7px;font-size:12px;font-weight:700;color:#fff;}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:58px;gap:10px;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent);letter-spacing:2px;text-decoration:none;flex-shrink:0;display:flex;align-items:center;gap:6px;}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo span{color:var(--text);}
+.nav-links{display:flex;gap:2px;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:11px;font-weight:700;padding:5px 8px;border-radius:6px;transition:all .2s;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--card);}
+.nav-search{display:flex;gap:6px;align-items:center;position:relative;}
+.nav-search input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-family:'Nunito',sans-serif;width:170px;outline:none;transition:border .2s;}
+.nav-search input:focus{border-color:var(--accent);}
+.nav-search input::placeholder{color:var(--muted);}
+.btn-search{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;font-family:'Nunito',sans-serif;}
+
+/* SEARCH SUGGESTIONS */
+.suggestions{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;z-index:200;max-height:300px;overflow-y:auto;display:none;margin-top:4px;}
+.suggestions.show{display:block;}
+.suggestion-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border);}
+.suggestion-item:last-child{border-bottom:none;}
+.suggestion-item:hover{background:var(--card);}
+.suggestion-img{width:36px;height:54px;object-fit:cover;border-radius:4px;flex-shrink:0;}
+.suggestion-info{flex:1;min-width:0;}
+.suggestion-title{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.suggestion-meta{font-size:11px;color:var(--muted);}
+
+/* HERO */
+.hero{position:relative;min-height:420px;overflow:hidden;display:flex;align-items:flex-end;padding:40px 20px;}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.4);transition:background-image .5s;}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#0a0c10 0%,transparent 60%),linear-gradient(to right,rgba(0,0,0,.6) 0%,transparent 60%);}
+.hero-content{position:relative;z-index:2;max-width:560px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,70px);line-height:.95;color:#fff;margin-bottom:10px;}
+.hero h1 em{color:var(--accent);font-style:normal;}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.hero-tag{font-size:11px;font-weight:800;padding:3px 10px;border-radius:5px;background:rgba(255,255,255,.15);color:#fff;backdrop-filter:blur(4px);}
+.hero p{color:#c0c8d8;font-size:13px;line-height:1.7;margin-bottom:20px;max-width:440px;}
+.hero-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:11px 22px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;transition:transform .15s;}
+.btn-primary:hover{transform:translateY(-2px);opacity:.9;}
+.btn-outline{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.3);padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;backdrop-filter:blur(4px);}
+.hero-dots{position:absolute;bottom:20px;right:20px;display:flex;gap:6px;z-index:2;}
+.hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:background .2s;}
+.hero-dot.active{background:var(--accent);width:20px;border-radius:4px;}
+
+/* TICKER */
+.ticker-wrap{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:9px 0;display:flex;align-items:center;}
+.ticker-label{background:var(--accent);color:#fff;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 14px;white-space:nowrap;flex-shrink:0;}
+.ticker-track{display:flex;animation:ticker 30s linear infinite;gap:40px;padding-left:24px;white-space:nowrap;}
+.ticker-item{color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;}
+.ticker-item:hover{color:var(--accent);}
+.ticker-sep{color:var(--border);}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+/* SECTION */
+.section{padding:28px 16px;max-width:1280px;margin:0 auto;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;display:flex;align-items:center;gap:10px;}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px;}
+.see-all{color:var(--accent);font-size:12px;font-weight:700;text-decoration:none;border:1px solid var(--accent);padding:4px 12px;border-radius:6px;transition:all .2s;white-space:nowrap;cursor:pointer;}
+.see-all:hover{background:var(--accent);color:#fff;}
+
+/* TABS */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.tab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;text-transform:uppercase;}
+.tab:hover{color:var(--text);border-color:var(--accent);}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* MOVIES GRID */
+.movies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;}
+.movie-card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);transition:transform .2s,box-shadow .2s;cursor:pointer;position:relative;}
+.movie-card:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(230,57,70,.2);border-color:rgba(230,57,70,.5);}
+.movie-card:hover .card-overlay{opacity:1;}
+.card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--surface);}
+.card-overlay{position:absolute;top:0;left:0;right:0;aspect-ratio:2/3;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
+.play-btn{width:44px;height:44px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.card-rating-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.8);color:#f4a261;font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px;backdrop-filter:blur(4px);}
+.card-new-badge{position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;}
+.card-body{padding:8px 10px 10px;}
+.card-title{font-weight:800;font-size:12px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-year{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:7px;}
+.card-download{display:block;width:100%;background:var(--accent);color:#fff;border:none;padding:7px;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;text-transform:uppercase;text-align:center;transition:opacity .2s;}
+.card-download:hover{opacity:.85;}
+
+/* CATEGORIES */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+.cat-card{border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:transform .2s;font-weight:800;font-size:11px;color:#fff;text-transform:uppercase;}
+.cat-card:hover{transform:translateY(-3px);opacity:.88;}
+.cat-icon{font-size:22px;margin-bottom:5px;}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;flex-direction:column;gap:14px;grid-column:1/-1;}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{color:var(--muted);font-size:14px;font-weight:700;}
+.no-results{text-align:center;padding:40px 20px;color:var(--muted);font-size:15px;grid-column:1/-1;}
+.no-results span{font-size:40px;display:block;margin-bottom:12px;}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;overflow-y:auto;padding:20px;}
+.modal.active{display:flex;align-items:flex-start;justify-content:center;}
+.modal-inner{background:var(--surface);border-radius:16px;max-width:480px;width:100%;margin:auto;overflow:hidden;border:1px solid var(--border);}
+.modal-close{position:fixed;top:16px;right:16px;background:var(--accent);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;z-index:301;}
+.modal-img{width:100%;max-height:260px;object-fit:cover;}
+.modal-body{padding:18px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--text);margin-bottom:6px;}
+.modal-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.modal-tag{font-size:11px;font-weight:800;padding:3px 10px;border-radius:5px;background:var(--card);color:var(--muted);}
+.modal-overview{color:#a0a8b8;font-size:13px;line-height:1.7;margin-bottom:16px;}
+.modal-btns{display:flex;gap:8px;flex-direction:column;}
+.btn-dl{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:center;text-decoration:none;display:block;transition:opacity .2s;}
+.btn-dl:hover{opacity:.85;}
+.btn-dl-alt{display:none;}
+
+/* Stream feature removed */
+
+/* WHATSAPP BTN */
+.whatsapp-btn{position:fixed;bottom:24px;right:20px;background:#25d366;color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:24px;cursor:pointer;z-index:200;box-shadow:0 4px 20px rgba(37,211,102,.4);display:flex;align-items:center;justify-content:center;transition:transform .2s;}
+.whatsapp-btn:hover{transform:scale(1.1);}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:28px 16px 18px;margin-top:36px;}
+.footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:24px;}
+@media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;}.nav-links{display:none;}}
+.footer-brand .logo{font-size:24px;display:inline-flex;margin-bottom:8px;}
+.footer-brand p{color:var(--muted);font-size:12px;line-height:1.7;max-width:240px;}
+.footer-social{display:flex;gap:8px;margin-top:12px;}
+.social-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;text-decoration:none;transition:transform .2s;}
+.social-btn:hover{transform:scale(1.1);}
+.footer-col h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text);margin-bottom:10px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.footer-col ul a{color:var(--muted);text-decoration:none;font-size:12px;cursor:pointer;}
+.footer-col ul a:hover{color:var(--accent);}
+.footer-bottom{max-width:1280px;margin:18px auto 0;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11px;color:var(--muted);}
+
+/* ABOUT PAGE */
+.about-hero{background:linear-gradient(135deg,#0a0c10,#1a0a10);padding:60px 20px;text-align:center;}
+.about-hero h1{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--text);margin-bottom:12px;}
+.about-hero h1 em{color:var(--accent);font-style:normal;}
+.about-hero p{color:var(--muted);font-size:14px;max-width:500px;margin:0 auto;}
+.about-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;padding:28px 16px;max-width:900px;margin:0 auto;}
+.about-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;}
+.about-card-icon{font-size:32px;margin-bottom:10px;}
+.about-card h3{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text);margin-bottom:6px;}
+.about-card p{color:var(--muted);font-size:12px;line-height:1.6;}
+
+/* PRIVACY PAGE */
+.policy-content{max-width:700px;margin:0 auto;padding:40px 20px;}
+.policy-content h1{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--text);margin-bottom:20px;}
+.policy-content h2{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);margin:24px 0 10px;}
+.policy-content p{color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:12px;}
+
+/* CONTACT */
+.contact-wrap{max-width:500px;margin:0 auto;padding:40px 20px;}
+.contact-wrap h1{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--text);margin-bottom:20px;}
+.contact-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
+.contact-icon{font-size:22px;}
+.contact-info h4{font-size:13px;font-weight:800;color:var(--text);}
+.contact-info p{font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="topbar">🔥 Free Movies, Series & Dramas — Hollywood · Nollywood · K-Drama · Bollywood — Updated Daily</div>
+
+<nav>
+  <a class="logo" href="#" onclick="showPage('home')">
+    <div class="logo-icon" style="width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:0;">MV</div>
+    <span style="color:var(--text);">Movies</span>Vault
+  </a>
+  <ul class="nav-links">
+    <li><a class="active" id="nav-home" onclick="showPage('home')">Home</a></li>
+    <li><a id="nav-hollywood" onclick="showPage('hollywood')">Hollywood</a></li>
+    <li><a id="nav-nollywood" onclick="showPage('nollywood')">Nollywood</a></li>
+    <li><a id="nav-bollywood" onclick="showPage('bollywood')">Bollywood</a></li>
+    <li><a id="nav-series" onclick="showPage('series')">Series</a></li>
+    <li><a id="nav-kdrama" onclick="showPage('kdrama')">K-Drama</a></li>
+    <li><a id="nav-about" onclick="showPage('about')">About</a></li>
+  </ul>
+  <div class="nav-search">
+    <input type="text" id="navSearch" placeholder="Search movies…" autocomplete="off">
+    <button class="btn-search" onclick="doSearch()">Search</button>
+    <div class="suggestions" id="suggestions"></div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🔥 Featured Today</div>
+      <h1 id="heroTitle">Loading<br><em>Movies…</em></h1>
+      <div class="hero-meta" id="heroMeta"></div>
+      <p id="heroDesc">Discover the best movies and series from around the world.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" id="heroDownload" onclick="heroDownloadFn()">⬇ Download</button>
+        <button class="btn-outline" onclick="heroDownloadFn()">ℹ More Info</button>
+      </div>
+    </div>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-label">🔴 Trending</div>
+    <div class="ticker-track">
+      <span class="ticker-item">Sinners (2025)</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Thunderbolts (2025)</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Mission Impossible 8</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Squid Game S3</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">The Last of Us S2</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Gangs of Lagos 2</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Chhaava (Bollywood)</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">A Minecraft Movie</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Sinners (2025)</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Thunderbolts (2025)</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Mission Impossible 8</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Squid Game S3</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">The Last of Us S2</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Gangs of Lagos 2</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">Chhaava (Bollywood)</span><span class="ticker-sep">•</span>
+      <span class="ticker-item">A Minecraft Movie</span><span class="ticker-sep">•</span>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="section">
+    <div class="section-header"><div class="section-title">Browse by Genre</div></div>
+    <div class="cat-grid">
+      <div class="cat-card" style="background:linear-gradient(135deg,#e63946,#c1121f);" onclick="loadGenre(28,'Action Movies')"><div class="cat-icon">💥</div>Action</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#4cc9f0,#1d6fa4);" onclick="loadGenre(10749,'Romance Movies')"><div class="cat-icon">💕</div>Romance</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#f4a261,#e76f51);" onclick="loadGenre(35,'Comedy Movies')"><div class="cat-icon">😂</div>Comedy</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#a663cc,#7b2d8b);" onclick="loadGenre(27,'Horror Movies')"><div class="cat-icon">👻</div>Horror</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#2ec4b6,#1a8079);" onclick="loadGenre(878,'Sci-Fi Movies')"><div class="cat-icon">🚀</div>Sci-Fi</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#f72585,#b5179e);" onclick="loadGenre(16,'Animation Movies')"><div class="cat-icon">🎨</div>Animation</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#4361ee,#3a0ca3);" onclick="loadGenre(53,'Thriller Movies')"><div class="cat-icon">🔪</div>Thriller</div>
+      <div class="cat-card" style="background:linear-gradient(135deg,#80b918,#55880f);" onclick="loadGenre(18,'Drama Movies')"><div class="cat-icon">🎭</div>Drama</div>
+    </div>
+  </div>
+
+  <!-- NEW RELEASES -->
+  <div class="section" style="padding-top:0;">
+    <div class="section-header">
+      <div class="section-title">🆕 New Releases</div>
+      <span class="see-all" onclick="loadCat('now_playing','Now Playing',false)">See All →</span>
+    </div>
+    <div id="new-releases-grid" class="movies-grid">
+      <div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div>
+    </div>
+  </div>
+
+  <!-- NKIRI K-DRAMA SECTION -->
+  <div class="section" style="padding-top:0;">
+    <div class="section-header">
+      <div class="section-title">🎎 K-Drama & Asian Series</div>
+      <span class="see-all" onclick="showPage('kdrama')">See All →</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="loadNkiriCategory('k-drama',this)">K-Drama</button>
+      <button class="tab" onclick="loadNkiriCategory('chinese-drama',this)">Chinese Drama</button>
+      <button class="tab" onclick="loadNkiriCategory('thai-drama',this)">Thai Drama</button>
+      <button class="tab" onclick="loadNkiriCategory('tv-series',this)">TV Series</button>
+      <button class="tab" onclick="loadNkiriCategory('international-movies',this)">International</button>
+    </div>
+    <div id="nkiri-grid" class="movies-grid">
+      <div class="loading"><div class="spinner"></div><div class="loading-text">Loading K-Drama…</div></div>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="section" style="padding-top:0;">
+    <div class="section-header">
+      <div class="section-title">🔥 Trending Now</div>
+      <span class="see-all" onclick="loadCat('popular','Popular Movies',false)">See All →</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="loadCat('popular','Popular Movies',false,this)">Popular</button>
+      <button class="tab" onclick="loadCat('now_playing','Now Playing',false,this)">Now Playing</button>
+      <button class="tab" onclick="loadCat('top_rated','Top Rated',false,this)">Top Rated</button>
+      <button class="tab" onclick="loadCat('upcoming','Upcoming',false,this)">Upcoming</button>
+      <button class="tab" onclick="loadCat('popular','TV Series',true,this)">TV Series</button>
+    </div>
+    <div id="movies-grid" class="movies-grid">
+      <div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div>
+    </div>
+  </div>
+
+</div><!-- end home page -->
+
+<!-- HOLLYWOOD PAGE -->
+<div class="page" id="page-hollywood">
+  <div style="background:linear-gradient(135deg,#1a0a0a,#0a0c10);padding:40px 20px 20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:10px;">🎬</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#fff;">Hollywood <em style="color:var(--accent);">Movies</em></h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;">Latest blockbusters from Hollywood</p>
+  </div>
+  <div class="section">
+    <div class="tabs">
+      <button class="tab active" onclick="loadPageMovies('hollywood','popular',false,this)">Popular</button>
+      <button class="tab" onclick="loadPageMovies('hollywood','now_playing',false,this)">Now Playing</button>
+      <button class="tab" onclick="loadPageMovies('hollywood','top_rated',false,this)">Top Rated</button>
+      <button class="tab" onclick="loadPageMovies('hollywood','upcoming',false,this)">Upcoming</button>
+    </div>
+    <div id="hollywood-grid" class="movies-grid"><div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- NOLLYWOOD PAGE -->
+<div class="page" id="page-nollywood">
+  <div style="background:linear-gradient(135deg,#1a0e05,#0a0c10);padding:40px 20px 20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:10px;">🌍</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#fff;">Nollywood <em style="color:#f4a261;">Movies</em></h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;">Best of Nigerian & African cinema</p>
+  </div>
+  <div class="section">
+    <div id="nollywood-grid" class="movies-grid"><div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- BOLLYWOOD PAGE -->
+<div class="page" id="page-bollywood">
+  <div style="background:linear-gradient(135deg,#1a0520,#0a0c10);padding:40px 20px 20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:10px;">🎭</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#fff;">Bollywood <em style="color:#a663cc;">Movies</em></h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;">Latest Hindi & Indian movies</p>
+  </div>
+  <div class="section">
+    <div id="bollywood-grid" class="movies-grid"><div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- SERIES PAGE -->
+<div class="page" id="page-series">
+  <div style="background:linear-gradient(135deg,#050a1a,#0a0c10);padding:40px 20px 20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:10px;">📺</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#fff;">TV <em style="color:#4cc9f0;">Series</em></h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;">Hollywood, K-Drama, Chinese & more</p>
+  </div>
+  <div class="section">
+    <div class="tabs">
+      <button class="tab active" onclick="loadPageMovies('series','popular',true,this)">All Series</button>
+      <button class="tab" onclick="loadTVByGenre(18,'K-Drama',this)">K-Drama</button>
+      <button class="tab" onclick="loadTVByGenre(10759,'Action Series',this)">Action</button>
+      <button class="tab" onclick="loadTVByGenre(35,'Comedy Series',this)">Comedy</button>
+    </div>
+    <div id="series-grid" class="movies-grid"><div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- K-DRAMA PAGE -->
+<div class="page" id="page-kdrama">
+  <div style="background:linear-gradient(135deg,#0a1a10,#0a0c10);padding:40px 20px 20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:10px;">🎎</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:#fff;">K-Drama & <em style="color:#2ec4b6;">Asian Series</em></h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:8px;">Latest Korean, Chinese & Thai dramas with direct download links</p>
+  </div>
+  <div class="section">
+    <div class="tabs">
+      <button class="tab active" onclick="loadNkiriCategory('k-drama',this,'kdrama-grid')">K-Drama</button>
+      <button class="tab" onclick="loadNkiriCategory('chinese-drama',this,'kdrama-grid')">Chinese Drama</button>
+      <button class="tab" onclick="loadNkiriCategory('thai-drama',this,'kdrama-grid')">Thai Drama</button>
+      <button class="tab" onclick="loadNkiriCategory('tv-series',this,'kdrama-grid')">TV Series</button>
+      <button class="tab" onclick="loadNkiriCategory('international-movies',this,'kdrama-grid')">International</button>
+    </div>
+    <div id="kdrama-grid" class="movies-grid"><div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <h1>About <em>MV</em> MoviesVault</h1>
+    <p>Your ultimate free destination for movies, series, Nollywood, Hollywood, K-Drama and Bollywood content.</p>
+  </div>
+  <div class="about-cards">
+    <div class="about-card">
+      <div class="about-card-icon">🎬</div>
+      <h3>500,000+ Titles</h3>
+      <p>Access to a massive library of movies and TV shows from around the world.</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">🔄</div>
+      <h3>Daily Updates</h3>
+      <p>New movies and episodes added every single day so you never miss anything.</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">📱</div>
+      <h3>Works on Any Device</h3>
+      <p>Phone, tablet or computer — MoviesVault works perfectly on all devices.</p>
+    </div>
+    <div class="about-card">
+      <div class="about-card-icon">💰</div>
+      <h3>100% Free</h3>
+      <p>No subscriptions, no registration required. Just visit and enjoy!</p>
+    </div>
+  </div>
+  <div class="contact-wrap">
+    <h1>Contact Us</h1>
+    <div class="contact-item">
+      <div class="contact-icon">📧</div>
+      <div class="contact-info">
+        <h4>Email</h4>
+        <p>moviesvauthub@gmail.com</p>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">💬</div>
+      <div class="contact-info">
+        <h4>WhatsApp Community</h4>
+        <p>Join our WhatsApp group for daily movie updates</p>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">📋</div>
+      <div class="contact-info">
+        <h4>DMCA / Copyright</h4>
+        <p>We respect copyright. Report issues to our email above.</p>
+      </div>
+    </div>
+  </div>
+  <div class="policy-content">
+    <h1>Privacy Policy</h1>
+    <h2>Information We Collect</h2>
+    <p>MoviesVault does not collect personal information. We use third-party APIs like TMDB to display movie information.</p>
+    <h2>Third Party Links</h2>
+    <p>Our download links redirect to third party sites. We are not responsible for content on those sites.</p>
+    <h2>Cookies</h2>
+    <p>We may use cookies to improve your experience. By using this site you agree to our use of cookies.</p>
+    <h2>Changes</h2>
+    <p>We reserve the right to update this privacy policy at any time. Last updated: May 2025.</p>
+  </div>
+</div>
+
+<!-- MOVIE MODAL -->
+<div class="modal" id="modal">
+  <button class="modal-close" onclick="closeModal()">✕</button>
+  <div class="modal-inner">
+    <img id="mImg" class="modal-img" src="" alt="">
+    <div class="modal-body">
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-meta" id="mMeta"></div>
+      <div class="modal-overview" id="mOverview"></div>
+      <div class="modal-btns">
+        <div id="mDlSection" style="margin-top:0;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stream removed -->
+
+<!-- WHATSAPP BUTTON -->
+<button class="whatsapp-btn" onclick="window.open('https://wa.me/?text=Check out this free movie site: https://moviesvault.vercel.app','_blank')" title="Share on WhatsApp">💬</button>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="logo" href="#" onclick="showPage('home')">
+        <div class="logo-icon" style="width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:0;">MV</div>
+        <span style="color:var(--text);">Movies</span>Vault
+      </a>
+      <p>Your trusted source for free movies, TV shows, and dramas worldwide. Updated daily.</p>
+      <div class="footer-social">
+        <a class="social-btn" style="background:#1877f2;" href="#" target="_blank">f</a>
+        <a class="social-btn" style="background:#e1306c;" href="#" target="_blank">📸</a>
+        <a class="social-btn" style="background:#25d366;" href="#" target="_blank">💬</a>
+        <a class="social-btn" style="background:#0088cc;" href="#" target="_blank">✈️</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Movies</h4>
+      <ul>
+        <li><a onclick="showPage('hollywood')">Hollywood</a></li>
+        <li><a onclick="showPage('nollywood')">Nollywood</a></li>
+        <li><a onclick="showPage('bollywood')">Bollywood</a></li>
+        <li><a onclick="loadGenre(28,'Action Movies')">Action</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Series</h4>
+      <ul>
+        <li><a onclick="showPage('series')">All Series</a></li>
+        <li><a onclick="loadTVByGenre(18,'K-Drama')">K-Drama</a></li>
+        <li><a onclick="loadCat('popular','TV Series',true)">Popular</a></li>
+        <li><a onclick="loadCat('top_rated','Top Rated',true)">Top Rated</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <ul>
+        <li><a onclick="showPage('about')">About Us</a></li>
+        <li><a onclick="showPage('about')">Contact</a></li>
+        <li><a onclick="showPage('about')">DMCA</a></li>
+        <li><a onclick="showPage('about')">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 MoviesVault. All rights reserved.</span>
+    <span>For entertainment purposes only. Powered by TMDB.</span>
+  </div>
+</footer>
+
+<script>
+const KEY='8265bd1679663a7ea12ac168da84d2e8';
+const BASE='https://api.themoviedb.org/3';
+const IMG='https://image.tmdb.org/t/p/w500';
+const BIG='https://image.tmdb.org/t/p/w1280';
+let currentId=null,currentType='movie',heroMovies=[],heroIdx=0,heroTimer=null,isTV=false;
+
+function dlLink(t){return `#`;}
+function dlLink2(t){return `#`;}
+
+// PAGE NAVIGATION
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const navEl=document.getElementById('nav-'+name);
+  if(navEl)navEl.classList.add('active');
+  window.scrollTo(0,0);
+  if(name==='hollywood') loadPageMovies('hollywood','popular',false);
+  if(name==='nollywood') loadNollywood();
+  if(name==='bollywood') loadBollywood();
+  if(name==='series') loadPageMovies('series','popular',true);
+  if(name==='kdrama') loadNkiriCategory('k-drama',null,'kdrama-grid');
+}
+
+// CARD
+function card(m,tv){
+  const title=tv?(m.name||m.title):(m.title||m.name);
+  const year=((tv?m.first_air_date:m.release_date)||'').slice(0,4);
+  const rating=m.vote_average?m.vote_average.toFixed(1):'';
+  const poster=m.poster_path?IMG+m.poster_path:`https://placehold.co/300x450/1a1e28/e63946?text=${encodeURIComponent(title)}`;
+  const isNew=year==='2025'||year==='2026';
+  return `<div class="movie-card" onclick="openModal(${m.id},${tv})">
+    <img class="card-img" src="${poster}" alt="${title}" loading="lazy" onerror="this.src='https://placehold.co/300x450/1a1e28/e63946?text=No+Image'">
+    <div class="card-overlay"><div class="play-btn">ℹ</div></div>
+    ${rating?`<div class="card-rating-badge">⭐${rating}</div>`:''}
+    ${isNew?`<div class="card-new-badge">NEW</div>`:''}
+    <div class="card-body">
+      <div class="card-title">${title}</div>
+      <div class="card-year">${year}</div>
+      <div class="card-download">⬇ Download</div>
+    </div>
+  </div>`;
+}
+
+// LOAD
+async function loadGrid(url,gridId,tv=false){
+  const grid=document.getElementById(gridId);
+  if(!grid)return;
+  grid.innerHTML='<div class="loading"><div class="spinner"></div><div class="loading-text">Loading…</div></div>';
+  try{
+    const r=await fetch(url);const d=await r.json();
+    const items=d.results||[];
+    grid.innerHTML=items.length?items.map(m=>card(m,tv)).join(''):'<div class="no-results"><span>😕</span>No results found.</div>';
+  }catch(e){grid.innerHTML='<div class="no-results"><span>⚠️</span>Could not load. Check internet.</div>';}
+}
+
+function loadCat(cat,label,tv,btn){
+  isTV=tv;
+  if(btn){document.querySelectorAll('#page-home .tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+  const type=tv?'tv':'movie';
+  loadGrid(`${BASE}/${type}/${cat}?api_key=${KEY}&language=en-US&page=1`,'movies-grid',tv);
+  document.getElementById('movies-grid')?.scrollIntoView({behavior:'smooth'});
+}
+
+function loadGenre(id,label){
+  showPage('home');
+  isTV=false;
+  loadGrid(`${BASE}/discover/movie?api_key=${KEY}&with_genres=${id}&sort_by=popularity.desc&page=1`,'movies-grid',false);
+}
+
+function loadPageMovies(page,cat,tv,btn){
+  if(btn){document.querySelectorAll(`#page-${page} .tab`).forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+  const type=tv?'tv':'movie';
+  loadGrid(`${BASE}/${type}/${cat}?api_key=${KEY}&language=en-US&page=1`,`${page}-grid`,tv);
+}
+
+function loadTVByGenre(id,label,btn){
+  if(btn){document.querySelectorAll('#page-series .tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');}
+  loadGrid(`${BASE}/discover/tv?api_key=${KEY}&with_genres=${id}&sort_by=popularity.desc&page=1`,'series-grid',true);
+}
+
+function loadNollywood(){
+  const grid=document.getElementById('nollywood-grid');
+  if(!grid)return;
+  grid.innerHTML='<div class="loading"><div class="spinner"></div><div class="loading-text">Loading Nollywood…</div></div>';
+  // Search for Nigerian movies using multiple strategies
+  fetch(`${BASE}/discover/movie?api_key=${KEY}&with_original_language=yo&sort_by=popularity.desc&page=1`)
+    .then(r=>r.json()).then(d=>{
+      const results=d.results||[];
+      if(results.length>=6){
+        grid.innerHTML=results.map(m=>card(m,false)).join('');
+      } else {
+        // fallback: search Nigerian keyword
+        return fetch(`${BASE}/search/movie?api_key=${KEY}&query=nollywood+nigeria&page=1`).then(r=>r.json()).then(d2=>{
+          const r2=d2.results||[];
+          const merged=[...results,...r2].filter((m,i,arr)=>arr.findIndex(x=>x.id===m.id)===i);
+          if(merged.length){
+            grid.innerHTML=merged.map(m=>card(m,false)).join('');
+          } else {
+            grid.innerHTML='<div class="no-results"><span>😕</span>No results found. Check your internet connection.</div>';
+          }
+        });
+      }
+    }).catch(()=>{
+      grid.innerHTML='<div class="no-results"><span>⚠️</span>Could not load. Check internet.</div>';
+    });
+}
+
+function loadBollywood(){
+  loadGrid(`${BASE}/discover/movie?api_key=${KEY}&with_original_language=hi&sort_by=popularity.desc&page=1`,'bollywood-grid',false);
+}
+
+// SEARCH WITH SUGGESTIONS
+let searchTimer=null;
+document.getElementById('navSearch').addEventListener('input',function(){
+  clearTimeout(searchTimer);
+  const q=this.value.trim();
+  if(q.length<2){document.getElementById('suggestions').classList.remove('show');return;}
+  searchTimer=setTimeout(()=>fetchSuggestions(q),400);
+});
+
+async function fetchSuggestions(q){
+  try{
+    const r=await fetch(`${BASE}/search/multi?api_key=${KEY}&query=${encodeURIComponent(q)}&page=1`);
+    const d=await r.json();
+    const items=(d.results||[]).slice(0,5);
+    const box=document.getElementById('suggestions');
+    if(!items.length){box.classList.remove('show');return;}
+    box.innerHTML=items.map(m=>{
+      const title=m.title||m.name||'Unknown';
+      const year=((m.release_date||m.first_air_date)||'').slice(0,4);
+      const poster=m.poster_path?IMG+m.poster_path:'';
+      const tv=m.media_type==='tv';
+      return `<div class="suggestion-item" onclick="openModal(${m.id},${tv});closeSuggestions()">
+        ${poster?`<img class="suggestion-img" src="${poster}" alt="">`:'<div class="suggestion-img" style="background:var(--card);"></div>'}
+        <div class="suggestion-info">
+          <div class="suggestion-title">${title}</div>
+          <div class="suggestion-meta">${year} · ${tv?'TV Series':'Movie'} · ⭐${m.vote_average?m.vote_average.toFixed(1):'N/A'}</div>
+        </div>
+      </div>`;
+    }).join('');
+    box.classList.add('show');
+  }catch(e){}
+}
+
+function closeSuggestions(){
+  document.getElementById('suggestions').classList.remove('show');
+  document.getElementById('navSearch').value='';
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.nav-search'))closeSuggestions();
+});
+
+function doSearch(){
+  const q=document.getElementById('navSearch').value.trim();
+  if(!q)return;
+  closeSuggestions();
+  showPage('home');
+  isTV=false;
+  loadGrid(`${BASE}/search/multi?api_key=${KEY}&query=${encodeURIComponent(q)}&page=1`,'movies-grid',false);
+  document.getElementById('navSearch').value=q;
+}
+
+document.getElementById('navSearch').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+
+// SITEMAP GENERATOR — serves sitemap at ?sitemap=1
+(function(){
+  if(window.location.search.includes('sitemap=1')){
+    const xml=`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://moviesvault.vercel.app/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n    <lastmod>2026-05-12</lastmod>\n  </url>\n</urlset>`;
+    document.open('application/xml');
+    document.write(xml);
+    document.close();
+  }
+})();
+
+// HERO CAROUSEL
+async function loadHero(){
+  try{
+    const r=await fetch(`${BASE}/movie/popular?api_key=${KEY}&language=en-US&page=1`);
+    const d=await r.json();
+    heroMovies=(d.results||[]).filter(m=>m.backdrop_path).slice(0,5);
+    if(heroMovies.length){
+      renderHero(0);
+      const dots=document.getElementById('heroDots');
+      dots.innerHTML=heroMovies.map((_,i)=>`<div class="hero-dot ${i===0?'active':''}" onclick="setHero(${i})"></div>`).join('');
+      heroTimer=setInterval(()=>setHero((heroIdx+1)%heroMovies.length),6000);
+    }
+  }catch(e){}
+}
+
+function renderHero(idx){
+  const m=heroMovies[idx];
+  if(!m)return;
+  heroIdx=idx;
+  currentId=m.id;currentType='movie';
+  document.getElementById('heroBg').style.backgroundImage=`url(${BIG+m.backdrop_path})`;
+  document.getElementById('heroTitle').innerHTML=m.title.toUpperCase()+'<br><em>'+m.title.split(' ').pop().toUpperCase()+'</em>';
+  document.getElementById('heroDesc').textContent=m.overview?m.overview.slice(0,150)+'…':'';
+  document.getElementById('heroMeta').innerHTML=
+    `<span class="hero-tag">📅 ${(m.release_date||'').slice(0,4)}</span>
+     <span class="hero-tag">⭐ ${m.vote_average?m.vote_average.toFixed(1):'N/A'}</span>
+     <span class="hero-tag">🎬 Movie</span>`;
+  document.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+
+function setHero(idx){clearInterval(heroTimer);renderHero(idx);heroTimer=setInterval(()=>setHero((heroIdx+1)%heroMovies.length),6000);}
+function heroPlay(){if(heroMovies[heroIdx])openModal(heroMovies[heroIdx].id,false);}
+function heroDownloadFn(){if(heroMovies[heroIdx])openModal(heroMovies[heroIdx].id,false);}
+
+// MODAL
+async function openModal(id,tv=false){
+  currentId=id;currentType=tv?'tv':'movie';
+  const type=tv?'tv':'movie';
+  document.getElementById('mImg').src='';
+  document.getElementById('mTitle').textContent='Loading…';
+  document.getElementById('mOverview').textContent='';
+  document.getElementById('mMeta').innerHTML='';
+  document.getElementById('mDlSection').innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px 0;">Loading info…</div>';
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow='hidden';
+  try{
+    const r=await fetch(`${BASE}/${type}/${id}?api_key=${KEY}`);
+    const m=await r.json();
+    const title=tv?(m.name||m.title):(m.title||m.name);
+    const year=((tv?m.first_air_date:m.release_date)||'').slice(0,4);
+    const genres=(m.genres||[]).map(g=>g.name).join(', ');
+    const img=m.backdrop_path?BIG+m.backdrop_path:(m.poster_path?IMG+m.poster_path:'');
+    document.getElementById('mImg').src=img;
+    document.getElementById('mTitle').textContent=title;
+    document.getElementById('mOverview').textContent=m.overview||'No description available.';
+    document.getElementById('mMeta').innerHTML=
+      `<span class="modal-tag">📅 ${year}</span>
+       <span class="modal-tag">⭐ ${m.vote_average?m.vote_average.toFixed(1):'N/A'}</span>
+       <span class="modal-tag">🎬 ${genres||(tv?'TV Series':'Movie')}</span>
+       ${m.runtime?`<span class="modal-tag">⏱ ${m.runtime}min`:''}`;
+    document.getElementById('mDlSection').innerHTML=`
+      <a class="btn-dl" href="https://thenkiri.com.ng/?s=${encodeURIComponent(title)}" target="_blank" rel="noopener" style="display:block;">⬇ Download — Search on TheNkiri</a>`;
+  }catch(e){
+    document.getElementById('mTitle').textContent='Could not load';
+    document.getElementById('mOverview').textContent='Failed to load movie info. Please check your internet connection.';
+    document.getElementById('mDlSection').innerHTML='';
+  }
+}
+
+// (openModalStream removed — download-only mode)
+
+function closeModal(){document.getElementById('modal').classList.remove('active');document.body.style.overflow='';}
+
+// Streaming disabled — download-only mode
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+
+// ── NKIRI INTEGRATION ──
+const NKIRI_BASE = 'https://thenkiri.com.ng';
+
+// Fetch and parse Nkiri category via WordPress RSS (no CORS issues)
+async function loadNkiriCategory(cat, btn, gridId='nkiri-grid'){
+  if(btn){
+    const tabs = btn.closest('.tabs') || btn.parentElement;
+    tabs.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">Loading from TheNkiri…</div></div>';
+  try{
+    // Use WordPress RSS feed — works cross-origin
+    const rssUrl = `${NKIRI_BASE}/category/${cat}/feed/`;
+    const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=20`);
+    const d = await r.json();
+    const items = d.items || [];
+    if(!items.length){ grid.innerHTML='<div class="no-results"><span>😕</span>No results found.</div>'; return; }
+    grid.innerHTML = items.map(item => nkiriCard(item)).join('');
+  } catch(e){
+    grid.innerHTML = '<div class="no-results"><span>⚠️</span>Could not load. Check internet.</div>';
+  }
+}
+
+function nkiriCard(item){
+  const title = item.title || 'Unknown';
+  const imgMatch = item.content ? item.content.match(/src="([^"]+\.(jpg|jpeg|png|webp))"/i) : null;
+  const thumb = item.thumbnail || (imgMatch ? imgMatch[1] : `https://placehold.co/300x450/1a1e28/2ec4b6?text=${encodeURIComponent(title.slice(0,15))}`);
+  const date = item.pubDate ? item.pubDate.slice(0,10) : '';
+  const url = item.link || '#';
+  const isNew = date.startsWith('2026') || date.startsWith('2025');
+  const safeUrl = url.replace(/'/g,"\\'");
+  const safeTitle = title.replace(/'/g,"\\'");
+  const safeThumb = thumb.replace(/'/g,"\\'");
+  return `<div class="movie-card" onclick="openNkiriModal('${safeUrl}','${safeTitle}','${safeThumb}','${date}')">
+    <img class="card-img" src="${thumb}" alt="${title}" loading="lazy" onerror="this.src='https://placehold.co/300x450/1a1e28/2ec4b6?text=No+Image'">
+    <div class="card-overlay"><div class="play-btn">ℹ</div></div>
+    ${isNew?'<div class="card-new-badge">NEW</div>':''}
+    <div class="card-body">
+      <div class="card-title">${title}</div>
+      <div class="card-year">${date.slice(0,4)||'—'}</div>
+      <div class="card-download">⬇ Download</div>
+    </div>
+  </div>`;
+}
+
+// Open modal for Nkiri items — fetches episode links from the post
+async function openNkiriModal(url, title, thumb, date){
+  currentId = null; currentType = 'nkiri';
+  document.getElementById('mImg').src = thumb;
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mOverview').textContent = 'Loading download links…';
+  document.getElementById('mMeta').innerHTML = `<span class="modal-tag">📅 ${date}</span><span class="modal-tag">⬇ TheNkiri</span>`;
+  document.getElementById('mDlSection').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:10px 0;">Fetching download links…</div>';
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Fetch post content via RSS2JSON
+  try{
+    const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url+'feed/')}&count=1`);
+    const d = await r.json();
+    const item = (d.items||[])[0];
+    const desc = item ? item.description || '' : '';
+    // Strip HTML for overview
+    const tmp = document.createElement('div'); tmp.innerHTML = desc;
+    document.getElementById('mOverview').textContent = tmp.textContent.slice(0,200) + '…' || 'See download page for details.';
+  } catch(e){}
+
+  // Always show the direct link to the Nkiri post page
+  document.getElementById('mDlSection').innerHTML = `
+    <a class="btn-dl" href="${url}" target="_blank" rel="noopener" style="display:block;">
+      ⬇ Download — Go to Full Download Page
+    </a>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">
+      Opens TheNkiri post with all episode & download links
+    </div>`;
+}
+
+// INIT
+loadHero();
+loadNkiriCategory('k-drama', null, 'nkiri-grid');
+loadGrid(`${BASE}/movie/now_playing?api_key=${KEY}&language=en-US&page=1`,'new-releases-grid',false);
+loadGrid(`${BASE}/movie/popular?api_key=${KEY}&language=en-US&page=1`,'movies-grid',false);
+</script>
+</body>
+</html>
