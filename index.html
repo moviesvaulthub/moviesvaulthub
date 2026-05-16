@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoviesVault — Free Movies & Series</title>
+<style>
+  :root{--bg:#0a0c10;--surface:#13161d;--card:#1a1e28;--border:#252a36;--accent:#e63946;--text:#e8ecf0;--muted:#7a8394;--green:#2ec4b6;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+  .topbar{background:var(--accent);text-align:center;padding:7px;font-size:12px;color:#fff;}
+  nav{background:var(--surface);display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);}
+  .logo{font-size:24px;font-weight:bold;color:var(--accent);text-decoration:none;}
+  .nav-links{display:flex;gap:15px;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;cursor:pointer;}
+  .nav-links a.active{color:var(--accent);}
+  .movies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px;}
+  .movie-card{background:var(--card);border-radius:10px;overflow:hidden;cursor:pointer;transition:transform 0.2s;}
+  .movie-card:hover{transform:scale(1.02);}
+  .movie-card img{width:100%;aspect-ratio:2/3;object-fit:cover;}
+  .movie-info{padding:10px;}
+  .movie-title{font-weight:bold;font-size:14px;}
+  .movie-year{font-size:12px;color:var(--muted);}
+  .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:1000;justify-content:center;align-items:center;}
+  .modal.active{display:flex;}
+  .modal-content{background:var(--surface);max-width:500px;width:90%;border-radius:12px;overflow:auto;max-height:90%;}
+  .modal-header{padding:15px;background:var(--card);display:flex;justify-content:space-between;}
+  .modal-body{padding:20px;}
+  .btn-dl{display:block;width:100%;background:var(--accent);color:#fff;border:none;padding:12px;margin:8px 0;border-radius:8px;cursor:pointer;text-align:center;text-decoration:none;}
+  .loading{text-align:center;padding:20px;color:var(--muted);}
+  .spinner{border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;width:40px;height:40px;animation:spin 0.8s linear infinite;margin:10px auto;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .page{display:none;}
+  .page.active{display:block;}
+  .section-title{font-size:24px;margin:20px 0 10px 20px;color:var(--accent);}
+</style>
+</head>
+<body>
+
+<div class="topbar">🔥 MoviesVault — Free Movies & Series — Updated Daily</div>
+
+<nav>
+  <a class="logo" href="#" onclick="showPage('home')">MoviesVault</a>
+  <div class="nav-links">
+    <a class="active" id="nav-home" onclick="showPage('home')">Home</a>
+    <a id="nav-kdrama" onclick="showPage('kdrama')">K-Drama</a>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="section-title">🔥 Popular Movies</div>
+  <div id="movies-grid" class="movies-grid"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+</div>
+
+<!-- K-DRAMA PAGE WITH SCRAPER TABS -->
+<div class="page" id="page-kdrama">
+  <div class="section-title">🎬 Latest Movies (Scraped)</div>
+  <div id="scraped-grid" class="movies-grid"><div class="loading"><div class="spinner"></div>Scraping...</div></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Movie Title</h3>
+      <button onclick="closeModal()" style="background:none;border:none;color:white;font-size:20px;">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      Loading...
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== TMDB API (for home page) ====================
+const TMDB_KEY = '8265bd1679663a7ea12ac168da84d2e8';
+const IMG_URL = 'https://image.tmdb.org/t/p/w300';
+
+// Load popular movies on home page
+async function loadPopularMovies() {
+  const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_KEY}&language=en-US&page=1`);
+  const data = await res.json();
+  const grid = document.getElementById('movies-grid');
+  grid.innerHTML = data.results.map(movie => `
+    <div class="movie-card" onclick="openMovieModal('${movie.title}', ${movie.id})">
+      <img src="${movie.poster_path ? IMG_URL + movie.poster_path : 'https://placehold.co/300x450/1a1e28/e63946?text=No+Image'}" loading="lazy">
+      <div class="movie-info">
+        <div class="movie-title">${movie.title}</div>
+        <div class="movie-year">${(movie.release_date || '').slice(0,4)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== SCRAPER (NO REDIRECTS) ====================
+// Using a public CORS proxy to fetch thenkiri.com safely
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+const NKIRI_BASE = 'https://thenkiri.com';
+
+// Fetch movies from a category (e.g., 'movies', 'series')
+async function fetchScrapedMovies(category = 'movies') {
+  const feedUrl = `${NKIRI_BASE}/category/${category}/feed/`;
+  const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+  try {
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+    if (!data.items) return [];
+    return data.items.map(item => ({
+      title: item.title,
+      link: item.link,
+      thumbnail: extractImage(item.content || item.description || '')
+    }));
+  } catch (err) {
+    console.error('Scrape failed', err);
+    return [];
+  }
+}
+
+function extractImage(html) {
+  const match = html.match(/<img[^>]+src=["']([^"']+)/i);
+  return match ? match[1] : null;
+}
+
+// Get download links from a specific post URL
+async function getDownloadLinks(postUrl) {
+  const fullUrl = CORS_PROXY + encodeURIComponent(postUrl);
+  try {
+    const res = await fetch(fullUrl);
+    const html = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const links = [];
+    // Look for common download link patterns
+    const selectors = [
+      'a[href*="rapidgator"]', 'a[href*="uploadhub"]', 'a[href*="mega.nz"]',
+      'a[href*="mediafire"]', 'a[href*="gdrive"]', 'a.download-button',
+      '.entry-content a[href*="http"]'
+    ];
+    selectors.forEach(sel => {
+      doc.querySelectorAll(sel).forEach(el => {
+        let href = el.getAttribute('href');
+        if (href && !href.includes(NKIRI_BASE) && !href.includes('localhost')) {
+          // Avoid duplicates
+          if (!links.some(l => l.url === href)) {
+            links.push({
+              url: href,
+              host: getHostName(href)
+            });
+          }
+        }
+      });
+    });
+    // If none found, fallback to any external link in the content
+    if (links.length === 0) {
+      doc.querySelectorAll('.entry-content a').forEach(el => {
+        let href = el.getAttribute('href');
+        if (href && !href.includes(NKIRI_BASE) && href.startsWith('http')) {
+          if (!links.some(l => l.url === href)) {
+            links.push({ url: href, host: 'External Link' });
+          }
+        }
+      });
+    }
+    return links;
+  } catch (err) {
+    return [];
+  }
+}
+
+function getHostName(url) {
+  if (url.includes('rapidgator')) return 'Rapidgator';
+  if (url.includes('uploadhub')) return 'UploadHub';
+  if (url.includes('mega.nz')) return 'Mega.nz';
+  if (url.includes('mediafire')) return 'MediaFire';
+  if (url.includes('drive.google')) return 'Google Drive';
+  return 'Download';
+}
+
+// Load scraped movies into the K-Drama page grid
+async function loadScrapedPage() {
+  const grid = document.getElementById('scraped-grid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div>Loading scraped movies...</div>';
+  const movies = await fetchScrapedMovies('movies');
+  if (!movies.length) {
+    grid.innerHTML = '<div class="loading">No movies found. Try again later.</div>';
+    return;
+  }
+  grid.innerHTML = movies.map(m => `
+    <div class="movie-card" onclick="openScrapedMovieModal('${m.link}', '${escapeHtml(m.title)}')">
+      <img src="${m.thumbnail || 'https://placehold.co/300x450/1a1e28/e63946?text=No+Image'}" loading="lazy" onerror="this.src='https://placehold.co/300x450/1a1e28/e63946?text=No+Image'">
+      <div class="movie-info">
+        <div class="movie-title">${escapeHtml(m.title)}</div>
+        <div class="movie-year">Scraped</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Open modal for scraped movie – fetches download links inside modal, no redirect
+async function openScrapedMovieModal(postUrl, title) {
+  document.getElementById('modalTitle').innerText = title;
+  document.getElementById('modalBody').innerHTML = '<div class="loading"><div class="spinner"></div>Searching for download links...</div>';
+  document.getElementById('modal').classList.add('active');
+  
+  const links = await getDownloadLinks(postUrl);
+  if (links.length === 0) {
+    document.getElementById('modalBody').innerHTML = `
+      <p>❌ No download links found for "${title}".</p>
+      <p>The post might not have any downloadable content.</p>
+      <a href="${postUrl}" target="_blank" class="btn-dl">View Original Page</a>
+    `;
+  } else {
+    let buttonsHtml = links.map(link => `<a href="${link.url}" target="_blank" class="btn-dl">⬇ Download from ${link.host}</a>`).join('');
+    document.getElementById('modalBody').innerHTML = `
+      <p>✅ Found ${links.length} download link(s):</p>
+      ${buttonsHtml}
+      <div style="margin-top:12px;padding:8px;background:rgba(46,196,182,0.1);border-radius:6px;">
+        <small style="color:var(--green);">🔒 External links. For educational use only.</small>
+      </div>
+    `;
+  }
+}
+
+// For home page movies (TMDB) – we also add a "Find Download Links" button
+async function openMovieModal(title, movieId) {
+  document.getElementById('modalTitle').innerText = title;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="loading"><div class="spinner"></div>Fetching info...</div>
+    <button class="btn-dl" id="scrapeForMovieBtn" style="margin-top:15px;">🔍 Find Download Links</button>
+  `;
+  document.getElementById('modal').classList.add('active');
+  
+  // Attach event to the new button
+  document.getElementById('scrapeForMovieBtn').onclick = async () => {
+    document.getElementById('modalBody').innerHTML = '<div class="loading"><div class="spinner"></div>Searching for download links...</div>';
+    // Search thenkiri for this movie title
+    const searchUrl = `${NKIRI_BASE}/?s=${encodeURIComponent(title)}&post_type=post&feed=rss2`;
+    const searchProxy = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(searchUrl)}`;
+    try {
+      const res = await fetch(searchProxy);
+      const data = await res.json();
+      let firstPost = data.items && data.items[0];
+      if (!firstPost) {
+        document.getElementById('modalBody').innerHTML = `<p>No download links found for "${title}".</p>`;
+        return;
+      }
+      const postUrl = firstPost.link;
+      const links = await getDownloadLinks(postUrl);
+      if (links.length === 0) {
+        document.getElementById('modalBody').innerHTML = `<p>No direct download links extracted.</p><a href="${postUrl}" target="_blank" class="btn-dl">View Source Page</a>`;
+      } else {
+        let buttons = links.map(link => `<a href="${link.url}" target="_blank" class="btn-dl">⬇ Download from ${link.host}</a>`).join('');
+        document.getElementById('modalBody').innerHTML = `<p>✅ Found ${links.length} link(s)</p>${buttons}<div style="margin-top:12px;padding:8px;background:rgba(46,196,182,0.1);border-radius:6px;"><small>External links. Educational use only.</small></div>`;
+      }
+    } catch (err) {
+      document.getElementById('modalBody').innerHTML = `<p>Error searching for links. Please try again.</p>`;
+    }
+  };
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  if (name === 'kdrama') {
+    loadScrapedPage();
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+// Initial load
+loadPopularMovies();
+showPage('home');
+</script>
+</body>
+</html>
