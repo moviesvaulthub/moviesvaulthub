@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoviesVault – Direct Downloads</title>
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #13161d;
+      --card: #1a1e28;
+      --border: #252a36;
+      --accent: #e63946;
+      --text: #e8ecf0;
+      --muted: #7a8394;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .topbar {
+      background: var(--accent);
+      text-align: center;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .section {
+      padding: 30px 20px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .section-title {
+      font-size: 28px;
+      margin-bottom: 20px;
+      border-left: 5px solid var(--accent);
+      padding-left: 15px;
+    }
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 25px;
+    }
+    .movie-card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border);
+    }
+    .movie-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    .card-img {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      display: block;
+    }
+    .card-body {
+      padding: 10px;
+    }
+    .card-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-year {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+    .spinner {
+      width: 45px;
+      height: 45px;
+      border: 4px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--surface);
+      max-width: 450px;
+      width: 90%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--accent);
+    }
+    .modal-header {
+      padding: 15px;
+      background: var(--card);
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { color: var(--accent); }
+    .modal-body { padding: 25px; text-align: center; }
+    .close-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .btn-download {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: opacity 0.2s;
+    }
+    .btn-download:hover { opacity: 0.85; }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+      font-size: 12px;
+    }
+    .error-msg { color: #ff6b6b; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">🔥 MoviesVault – Direct Download Links (No Redirects)</div>
+
+<nav>
+  <a class="logo" href="#">MoviesVault</a>
+</nav>
+
+<div class="section">
+  <div class="section-title">🎬 Latest Movies (Scraped)</div>
+  <div id="moviesGrid" class="movies-grid">
+    <div class="loading"><div class="spinner"></div>Loading movies...</div>
+  </div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Movie Title</h3>
+      <button class="close-modal" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="loading"><div class="spinner"></div>Fetching download link...</div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2025 MoviesVault – All download links are from public sources. For educational use only.</footer>
+
+<script>
+  // ==================== CONFIGURATION ====================
+  // Public CORS proxy (works without any setup)
+  const CORS_PROXY = 'https://cors-proxy.htmldriven.com/?url=';
+  const WP_API_BASE = 'https://thenkiri.com/wp-json/wp/v2/posts';
+  const IMG_PROXY = 'https://images.weserv.nl/?url='; // for images if needed
+
+  // Fetch movies using WordPress REST API via proxy
+  async function fetchMovies() {
+    const url = `${CORS_PROXY}${encodeURIComponent(WP_API_BASE + '?per_page=24&_embed')}`;
+    try {
+      const res = await fetch(url);
+      const posts = await res.json();
+      if (!posts.length) throw new Error('No posts');
+      return posts.map(post => ({
+        id: post.id,
+        title: post.title.rendered,
+        link: post.link,
+        date: post.date,
+        // Try to get featured image from _embedded
+        thumbnail: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null,
+        content: post.content.rendered
+      }));
+    } catch (err) {
+      console.error('Fetch failed', err);
+      return [];
+    }
+  }
+
+  // Extract direct download link from post HTML content
+  function extractDownloadLink(htmlContent) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+    // Look for common file host links
+    const patterns = [
+      'a[href*="rapidgator"]',
+      'a[href*="uploadhub"]',
+      'a[href*="wella"]',
+      'a[href*="mega.nz"]',
+      'a[href*="mediafire"]',
+      'a[href*="gdrive"]',
+      'a[href*="download"]'
+    ];
+    for (let sel of patterns) {
+      let elem = doc.querySelector(sel);
+      if (elem && elem.href && !elem.href.includes('thenkiri.com')) {
+        return elem.href;
+      }
+    }
+    // Fallback: any external link that looks like a file
+    let allLinks = doc.querySelectorAll('a');
+    for (let link of allLinks) {
+      let href = link.href;
+      if (href && (href.includes('/download/') || href.includes('file=') || /\.(mkv|mp4|rar|zip)$/i.test(href))) {
+        if (!href.includes('thenkiri.com')) return href;
+      }
+    }
+    return null;
+  }
+
+  // Get full post content (to parse download links) - using same post link via proxy
+  async function getPostContent(postUrl) {
+    const proxyUrl = `${CORS_PROXY}${encodeURIComponent(postUrl)}`;
+    try {
+      const res = await fetch(proxyUrl);
+      const html = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      // Get the main article content
+      const article = doc.querySelector('.entry-content, article, .post-content, .content');
+      if (article) return article.innerHTML;
+      return html;
+    } catch (err) {
+      console.error('Failed to fetch post content', err);
+      return '';
+    }
+  }
+
+  // Render movie grid
+  async function loadMovies() {
+    const grid = document.getElementById('moviesGrid');
+    grid.innerHTML = '<div class="loading"><div class="spinner"></div>Fetching movies...</div>';
+    
+    const movies = await fetchMovies();
+    if (!movies.length) {
+      grid.innerHTML = '<div class="loading">❌ No movies found. The proxy may be temporarily down. Please refresh.</div>';
+      return;
+    }
+    
+    grid.innerHTML = movies.map(movie => {
+      const thumb = movie.thumbnail || 'https://placehold.co/300x450/1a1e28/e63946?text=No+Image';
+      const year = new Date(movie.date).getFullYear() || '';
+      return `
+        <div class="movie-card" data-url="${movie.link}" data-title="${escapeHtml(movie.title)}">
+          <img class="card-img" src="${thumb}" alt="${escapeHtml(movie.title)}" 
+               onerror="this.src='https://placehold.co/300x450/1a1e28/e63946?text=No+Image'">
+          <div class="card-body">
+            <div class="card-title">${escapeHtml(movie.title)}</div>
+            <div class="card-year">${year}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    // Attach click events
+    document.querySelectorAll('.movie-card').forEach(card => {
+      card.addEventListener('click', async () => {
+        const postUrl = card.dataset.url;
+        const title = card.dataset.title;
+        await openModalAndFetchLink(postUrl, title);
+      });
+    });
+  }
+  
+  async function openModalAndFetchLink(postUrl, title) {
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    
+    modalTitle.textContent = title;
+    modalBody.innerHTML = '<div class="loading"><div class="spinner"></div>Searching for download link...</div>';
+    modal.classList.add('active');
+    
+    // Fetch the full post content
+    const postHtml = await getPostContent(postUrl);
+    const directLink = extractDownloadLink(postHtml);
+    
+    if (directLink) {
+      modalBody.innerHTML = `
+        <p>✅ Direct download link found!</p>
+        <a href="${directLink}" target="_blank" class="btn-download">⬇ DOWNLOAD NOW</a>
+        <p style="margin-top: 15px; font-size: 12px; color: #7a8394;">You will be redirected to the file host.</p>
+      `;
+    } else {
+      modalBody.innerHTML = `
+        <p>❌ No download link found for "${escapeHtml(title)}".</p>
+        <p>The post may not contain any file host links.</p>
+        <button class="btn-download" style="background:#555;" onclick="closeModal()">Close</button>
+      `;
+    }
+  }
+  
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+  
+  // Start
+  loadMovies();
+</script>
+</body>
+</html>
