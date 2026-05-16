@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoviesVault – Direct Downloads</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0c10; color: #e8ecf0; }
+    .topbar { background: #e63946; text-align: center; padding: 8px; font-weight: bold; }
+    nav { background: #13161d; padding: 15px 20px; border-bottom: 1px solid #252a36; }
+    .logo { font-size: 24px; font-weight: bold; color: #e63946; text-decoration: none; }
+    .section { padding: 30px 20px; max-width: 1300px; margin: 0 auto; }
+    .section-title { font-size: 28px; margin-bottom: 20px; border-left: 5px solid #e63946; padding-left: 15px; }
+    .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; }
+    .movie-card { background: #1a1e28; border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid #252a36; transition: 0.2s; }
+    .movie-card:hover { transform: translateY(-5px); border-color: #e63946; }
+    .card-img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+    .card-body { padding: 10px; }
+    .card-title { font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-year { font-size: 12px; color: #7a8394; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #13161d; max-width: 450px; width: 90%; border-radius: 16px; border: 1px solid #e63946; }
+    .modal-header { padding: 15px; background: #1a1e28; display: flex; justify-content: space-between; border-bottom: 1px solid #252a36; }
+    .modal-header h3 { color: #e63946; }
+    .modal-body { padding: 25px; text-align: center; }
+    .close-modal { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+    .btn-download { display: inline-block; background: #e63946; color: white; padding: 12px 25px; border-radius: 40px; text-decoration: none; font-weight: bold; margin-top: 20px; }
+    footer { text-align: center; padding: 20px; color: #7a8394; border-top: 1px solid #252a36; margin-top: 40px; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">🔥 MoviesVault – Direct Download Links</div>
+
+<nav>
+  <a class="logo" href="#">MoviesVault</a>
+</nav>
+
+<div class="section">
+  <div class="section-title">🎬 Featured Movies</div>
+  <div id="moviesGrid" class="movies-grid"></div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Movie Title</h3>
+      <button class="close-modal" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>© 2025 MoviesVault – For educational purposes. Download links are from public sources.</footer>
+
+<script>
+  // ========== MOVIE DATABASE – EDIT THESE LINKS ==========
+  const movies = [
+    {
+      title: "John Wick: Chapter 4",
+      year: "2023",
+      poster: "https://image.tmdb.org/t/p/w300/jfD9jG7NfG5jZw6E0kYQnPxWz8N.jpg",
+      downloadLink: "https://download.wella.com/example/john-wick-4.mkv.html"
+    },
+    {
+      title: "Dune: Part Two",
+      year: "2024",
+      poster: "https://image.tmdb.org/t/p/w300/8b8t8P7LQdFk1mZQrqJqL8qpqJ9.jpg",
+      downloadLink: "https://rapidgator.net/file/example/dune2.mp4"
+    },
+    {
+      title: "Oppenheimer",
+      year: "2023",
+      poster: "https://image.tmdb.org/t/p/w300/8Gxv8gSFCU0XGDykEGv7m9bP5s8.jpg",
+      downloadLink: "https://uploadhub.to/file/example/oppenheimer.mp4"
+    },
+    {
+      title: "The Batman",
+      year: "2022",
+      poster: "https://image.tmdb.org/t/p/w300/74xTE1H8R0kRqQXaQ5J2Fxg8jE.jpg",
+      downloadLink: "https://mega.nz/file/example#key"
+    },
+    {
+      title: "Spider-Man: Across the Spider-Verse",
+      year: "2023",
+      poster: "https://image.tmdb.org/t/p/w300/4kER7l7PvAq1WZWU1n2kQ9sM8jN.jpg",
+      downloadLink: "https://download.wella.com/example/spiderverse.mkv.html"
+    },
+    {
+      title: "Mission: Impossible – Dead Reckoning",
+      year: "2023",
+      poster: "https://image.tmdb.org/t/p/w300/8fY7fFf7rXqQaQ9yZQpLqLqLqL.jpg",
+      downloadLink: "https://rapidgator.net/file/example/mission_impossible.mp4"
+    }
+  ];
+
+  function displayMovies() {
+    const grid = document.getElementById('moviesGrid');
+    grid.innerHTML = movies.map(movie => `
+      <div class="movie-card" data-title="${movie.title}" data-link="${movie.downloadLink}">
+        <img class="card-img" src="${movie.poster}" alt="${movie.title}" onerror="this.src='https://placehold.co/300x450/1a1e28/e63946?text=No+Image'">
+        <div class="card-body">
+          <div class="card-title">${movie.title}</div>
+          <div class="card-year">${movie.year}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.movie-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const title = card.dataset.title;
+        const link = card.dataset.link;
+        openModal(title, link);
+      });
+    });
+  }
+
+  function openModal(title, link) {
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    modalTitle.textContent = title;
+    modalBody.innerHTML = `
+      <p>✅ Download link available</p>
+      <a href="${link}" target="_blank" class="btn-download">⬇ DOWNLOAD NOW</a>
+      <p style="margin-top:15px; font-size:12px;">You will be redirected to the file host.</p>
+    `;
+    modal.classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+  }
+
+  displayMovies();
+</script>
+</body>
+</html>
